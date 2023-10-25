@@ -1,0 +1,59 @@
+debug: false
+use_random_seed: true
+seed: 461
+
+use_wandb: false
+all_data: false
+
+tags:
+  - baseline
+
+dataset:
+  data_dir: ../datasets/ranker_data
+
+model:
+  backbone_path: microsoft/deberta-v3-base
+  max_length: 1024
+
+train_params:
+  train_bs: 32 # 512 # 512
+  valid_bs: 32
+
+  num_epochs: 1 # 16
+  grad_accumulation: 1
+  warmup_pct: 0.02
+
+  save_trigger: 0.1
+  use_fp16: true
+
+  eval_frequency: 400 # 600
+  patience: 10
+
+  # n_train_queries: 40000
+  # negative_sample_ratio: 3
+
+
+optimizer:
+  head_lr: 5e-6
+  lr: 5e-6
+  weight_decay: 1e-3
+
+  eps: 1e-4
+  beta1: 0.9
+  beta2: 0.999
+
+  grad_clip: 1
+  use_bnb: true
+  use_llrd: true
+  llrd: 0.9
+
+outputs:
+  model_dir: ../models/sci_ranker
+
+
+wandb:
+  project: sci-llm-ret
+  run_name: exp003-e-ranker-base
+  all_data_flag: false
+  tags:
+    - reranker

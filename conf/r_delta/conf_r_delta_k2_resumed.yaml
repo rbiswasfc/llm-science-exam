@@ -1,0 +1,93 @@
+debug: false
+use_random_seed: true
+seed: 461
+
+use_wandb: false
+all_data: false
+
+tags:
+  - debv3_large
+  - retrieval
+  - spanwise
+
+model:
+  backbone_path: microsoft/deberta-v3-large #../models/del_span_mlm
+  num_layers_reinit: 1
+  num_layers_in_head: 4 # weighted average of last 4 layer outputs
+  n_freeze: 0
+
+  max_length_prompt: 128 # 768
+  max_length_option: 128 # 768
+  max_length_support: 1024
+
+  span_start_token: <|startofspan|>
+  span_end_token: <|endofspan|>
+
+  len_tokenizer: ???
+  pad_to_multiple_of: 64
+
+  load_from_ckpt: true
+  ckpt_path: ../models/r_delta_k1/sci_model_last.pth.tar
+
+train_params:
+  use_mixed_precision: true
+
+  train_bs: 16
+  valid_bs: 32
+
+  num_epochs: 1
+  grad_accumulation: 1
+  warmup_pct: 0.05
+
+  eval_frequency: 20 # 100
+  patience: 20
+  save_trigger: 0.0 # 5.0
+  
+  use_ema: true
+  decay_rate: 0.98
+
+
+optimizer:
+  head_lr: 1e-6
+  lr: 1e-6
+  weight_decay: 1e-4
+
+  eps: 1e-6
+  beta1: 0.9
+  beta2: 0.999 # 0.999
+
+  grad_clip_value: 1.0
+
+  use_bnb: true
+  
+  use_llrd: true
+  llrd: 0.9
+
+awp:
+  use_awp: false
+  awp_trigger: 5.0
+  awp_trigger_epoch: 1
+  adv_lr: 8e-5
+  adv_eps: 0.001
+
+outputs:
+  model_dir: ../models/r_delta_k2_adapted # r_delta_adapted_v2
+
+competition_dataset:
+  data_dir: ../datasets/kaggle-llm-science-exam
+  question_path: train.csv
+  comp_data_multiplier: 4
+
+
+valid_dataset_path: ../datasets/mcq_mix_v6/valid_mix_mcq.csv
+valid_support_path: ../datasets/mcq_mix_v6/id2context_k2_valid.json
+train_dataset_path: ../datasets/mcq_mix_v6/train_mix_mcq.csv
+train_support_path: ../datasets/mcq_mix_v6/id2context_k2_train.json
+
+wandb:
+  project: sci-llm-a1
+  run_name: exp017-delta-span-k1-adaptation
+  all_data_flag: false
+  tags:
+    - deberta
+    - span

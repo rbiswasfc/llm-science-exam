@@ -1,0 +1,90 @@
+debug: false
+use_random_seed: true
+seed: 461
+
+use_wandb: false
+all_data: false
+
+tags:
+  - topic
+
+dataset:
+  data_dir: ../datasets/sci_retriever_r4
+
+model:
+  query_encoder:
+    backbone_path: BAAI/bge-base-en-v1.5
+    max_length: 350 # 384
+    n_freeze: 0
+    pooler: mean
+    gradient_checkpointing: true # true
+    len_tokenizer: ???
+
+  content_encoder:
+    backbone_path: BAAI/bge-base-en-v1.5
+    max_length: 350 # 384
+    n_freeze: 0
+    pooler: mean
+    gradient_checkpointing: true # true
+    len_tokenizer: ???
+
+  n_neighbour: 50
+  negative_depth: 32
+  temperature: 0.05
+  load_from_ckpt: false
+
+awp:
+  use_awp: false
+  awp_trigger: 0.0
+  awp_trigger_epoch: 1
+  adv_lr: 2e-4
+  adv_eps: 0.001
+
+train_params:
+  retriever_bs: 384 # 256 # 512
+  query_bs: 128
+  content_bs: 128
+
+  num_epochs: 6 # 8
+  grad_accumulation: 1
+  warmup_pct: 0.02
+
+  save_trigger: 0.1
+  use_fp16: true
+
+  eval_frequency: 400 # 600
+  patience: 20
+  neg_ratio: 1
+  topic_activation_th: 0.5
+  min_topic_num: 8
+  max_topic_num: 32
+
+
+optimizer:
+  lr: 4e-6
+  weight_decay: 1e-3
+  
+  query_lr: 4e-6
+  query_weight_decay: 1e-3
+  query_llrd: 0.95
+
+  content_lr: 4e-6
+  content_weight_decay: 1e-3
+  content_llrd: 0.95
+
+  eps: 1e-6
+  beta1: 0.9
+  beta2: 0.999
+  grad_clip: 1
+  use_bnb: true
+
+outputs:
+  model_dir: ../models/ret_topic_bge_r4
+
+wandb:
+  project: sci-llm-ret
+  run_name: exp040-e-topic-hybrid-bge-r4
+  all_data_flag: false
+  tags:
+    - retriever
+    - mnrl
