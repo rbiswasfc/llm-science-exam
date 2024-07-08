@@ -305,7 +305,6 @@ def main():
             quantization_config=q_config,
             use_flash_attention_2=True,
             trust_remote_code=True,
-            token="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",
             # pretraining_tp=1,
         )
     tokenizer = AutoTokenizer.from_pretrained(cfg.model_name_or_path)
